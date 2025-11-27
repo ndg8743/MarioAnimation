@@ -57,11 +57,11 @@ manim -pql python/pixel_art_manim.py
 
 #### 1. `go/main.go` - Full Ebitengine Game
 Interactive pixel art viewer with:
-- 🎨 4 color palettes (NES, Game Boy, Grayscale, Synthwave)
-- 🏃 Walking animation
-- 🌊 Wave distortion effect
-- 📷 Screenshot export (PNG)
-- 🎬 Animation export (GIF)
+- 4 color palettes (NES, Game Boy, Grayscale, Synthwave)
+- Walking animation
+- Wave distortion effect
+- Screenshot export (PNG)
+- Animation export (GIF)
 
 **Run:**
 ```bash
@@ -101,6 +101,58 @@ go run headless.go
 
 ---
 
+### Processing / p5.js Implementations
+
+#### 1. `processing/pixel_art_demo.pde` - Processing Demo
+Interactive pixel art viewer with Processing (Java-based visual arts language).
+
+**Features:**
+- 4 color palettes (NES, Game Boy, Grayscale, Synthwave)
+- Walking animation
+- Wave distortion effect
+- Rotation effect
+- Screenshot export
+
+**Run:**
+1. Download Processing from https://processing.org/download/
+2. Open Processing IDE
+3. Open `processing/pixel_art_demo.pde`
+4. Click Play (or press Ctrl+R / Cmd+R)
+
+**Controls:**
+| Key | Action |
+|-----|--------|
+| 1-4 | Switch palettes |
+| SPACE | Toggle animation |
+| W | Toggle wave effect |
+| R | Toggle rotation |
+| S | Save screenshot |
+| ESC | Quit |
+
+---
+
+#### 2. `processing/p5js_pixel_art.html` - p5.js Web Version
+Browser-based pixel art viewer using p5.js (JavaScript).
+
+**Features:**
+- 4 color palettes
+- Walking animation
+- Wave distortion effect
+- Runs in any modern browser
+- No installation required
+
+**Run:**
+Simply open `processing/p5js_pixel_art.html` in your web browser.
+
+**Controls:**
+| Key | Action |
+|-----|--------|
+| 1-4 | Switch palettes |
+| SPACE | Toggle animation |
+| W | Toggle wave effect |
+
+---
+
 ## Features
 
 - 16x16 pixel art sprites
@@ -108,7 +160,7 @@ go run headless.go
 - Animated walking sprites
 - Sprite sheet generation
 - PNG/GIF export functionality
-- Multiple language implementations (Python & Go)
+- Multiple language implementations (Python, Go, Processing, p5.js)
 
 ## Why Ebitengine?
 

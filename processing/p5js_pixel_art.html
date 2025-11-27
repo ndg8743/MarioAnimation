@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pixel Art with p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #1a1a2e;
+      font-family: 'Courier New', monospace;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #ff6b6b;
+      margin-bottom: 10px;
+    }
+    .controls {
+      margin: 10px 0;
+      padding: 10px;
+      background: #16213e;
+      border-radius: 8px;
+    }
+    .controls span {
+      margin: 0 10px;
+      padding: 5px 10px;
+      background: #0f3460;
+      border-radius: 4px;
+    }
+    kbd {
+      background: #e94560;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    #canvas-container {
+      border: 3px solid #e94560;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pixel Art with p5.js</h1>
+  <div class="controls">
+    <span><kbd>1-4</kbd> Palettes</span>
+    <span><kbd>SPACE</kbd> Animate</span>
+    <span><kbd>W</kbd> Wave</span>
+    <span><kbd>R</kbd> Rotate</span>
+    <span><kbd>S</kbd> Save</span>
+  </div>
+  <div id="canvas-container"></div>
+
+<script>
+/*
+================================================================================
+PIXEL ART WITH P5.JS
+================================================================================
+
+p5.js is the JavaScript version of Processing - it runs in any web browser!
+This is perfect for sharing pixel art demos online.
+
+Website: https://p5js.org/
+Reference: https://p5js.org/reference/
+
+================================================================================
+*/
+
+// ============================================================================
+// PIXEL ART DATA
+// ============================================================================
+
+const MARIO = [
+  "0000022222000000",
+  "0000222222222000",
+  "0000333113100000",
+  "0003131113111000",
+  "0003133111311100",
+  "0003311113333000",
+  "0000011111110000",
+  "0000332333300000",
+  "0003332332333000",
+  "0033332222333300",
+  "0011321221231100",
+  "0011122222211100",
+  "0011222222221100",
+  "0000222002220000",
+  "0003330000333000",
+  "0033330000333300"
+];
+
+const MARIO_WALK = [
+  "0000022222000000",
+  "0000222222222000",
+  "0000333113100000",
+  "0003131113111000",
+  "0003133111311100",
+  "0003311113333000",
+  "0000011111110000",
+  "0000332333300000",
+  "0003332332333000",
+  "0033332222333300",
+  "0011321221231100",
+  "0011122222211100",
+  "0000222222220000",
+  "0000022200000000",
+  "0000333300000000",
+  "0003333000000000"
+];
+
+// ============================================================================
+// PALETTES
+// ============================================================================
+
+const PALETTES = {
+  nes: {
+    name: "NES Classic",
+    colors: ['#9494FF', '#F0AC3F', '#B92716', '#736702']
+  },
+  gameboy: {
+    name: "Game Boy",
+    colors: ['#9BBC0F', '#8BAC0F', '#306230', '#0F380F']
+  },
+  grayscale: {
+    name: "Grayscale",
+    colors: ['#FFFFFF', '#AAAAAA', '#555555', '#000000']
+  },
+  synthwave: {
+    name: "Synthwave",
+    colors: ['#0D0221', '#FF71CE', '#01CDFE', '#B967FF']
+  },
+  sunset: {
+    name: "Sunset",
+    colors: ['#2E1A47', '#FF6B6B', '#FFE66D', '#4ECDC4']
+  }
+};
+
+const PALETTE_KEYS = Object.keys(PALETTES);
+
+// ============================================================================
+// STATE
+// ============================================================================
+
+let currentPaletteIndex = 0;
+let pixelSize = 16;
+let animating = false;
+let waveEffect = false;
+let rotating = false;
+
+let currentFrame = 0;
+let frameTimer = 0;
+let animationSpeed = 8;
+
+let waveTime = 0;
+let rotationAngle = 0;
+
+// ============================================================================
+// P5.JS SETUP
+// ============================================================================
+
+function setup() {
+  // Create canvas and attach to container
+  let canvas = createCanvas(400, 400);
+  canvas.parent('canvas-container');
+  
+  // Disable smoothing for crisp pixels
+  noSmooth();
+  pixelDensity(1);
+  
+  // No outlines
+  noStroke();
+  
+  console.log("Pixel Art Demo loaded!");
+  console.log("Controls: 1-4=palette, SPACE=animate, W=wave, R=rotate, S=save");
+}
+
+// ============================================================================
+// P5.JS DRAW LOOP
+// ============================================================================
+
+function draw() {
+  // Get current palette
+  let paletteKey = PALETTE_KEYS[currentPaletteIndex];
+  let palette = PALETTES[paletteKey];
+  
+  // Background
+  background(palette.colors[0]);
+  
+  // Update animation
+  if (animating) {
+    frameTimer++;
+    if (frameTimer >= animationSpeed) {
+      frameTimer = 0;
+      currentFrame = (currentFrame + 1) % 2;
+    }
+  }
+  
+  // Update effects
+  if (waveEffect) waveTime += 0.05;
+  if (rotating) rotationAngle += 0.02;
+  
+  // Choose sprite
+  let spriteData = (animating && currentFrame === 1) ? MARIO_WALK : MARIO;
+  
+  // Center of screen
+  let centerX = width / 2;
+  let centerY = height / 2;
+  
+  // Draw sprite with transformations
+  push();
+  translate(centerX, centerY);
+  
+  if (rotating) {
+    rotate(rotationAngle);
+  }
+  
+  // Draw each pixel
+  for (let y = 0; y < spriteData.length; y++) {
+    let row = spriteData[y];
+    
+    for (let x = 0; x < row.length; x++) {
+      let colorIndex = parseInt(row[x]);
+      let pixelColor = palette.colors[colorIndex];
+      
+      // Calculate position (centered)
+      let px = (x - row.length / 2) * pixelSize;
+      let py = (y - spriteData.length / 2) * pixelSize;
+      
+      // Wave effect
+      if (waveEffect) {
+        let waveOffset = sin(px * 0.05 + waveTime * 4) * 8;
+        py += waveOffset;
+      }
+      
+      // Draw pixel
+      fill(pixelColor);
+      rect(px, py, pixelSize, pixelSize);
+    }
+  }
+  
+  pop();
+  
+  // Draw UI
+  drawUI(palette.name);
+}
+
+// ============================================================================
+// UI
+// ============================================================================
+
+function drawUI(paletteName) {
+  // Top bar
+  fill(0, 0, 0, 180);
+  rect(0, 0, width, 28);
+  
+  fill(255);
+  textSize(12);
+  textAlign(LEFT, TOP);
+  text(`Palette: ${paletteName}`, 10, 8);
+  
+  // Status
+  let status = [];
+  if (animating) status.push("ANIM");
+  if (waveEffect) status.push("WAVE");
+  if (rotating) status.push("ROTATE");
+  
+  textAlign(RIGHT, TOP);
+  text(status.map(s => `[${s}]`).join(" "), width - 10, 8);
+  
+  // FPS counter
+  textAlign(LEFT, TOP);
+  fill(150);
+  text(`FPS: ${Math.round(frameRate())}`, 10, height - 20);
+}
+
+// ============================================================================
+// KEYBOARD INPUT
+// ============================================================================
+
+function keyPressed() {
+  // Number keys for palettes
+  if (key === '1') currentPaletteIndex = 0;
+  if (key === '2') currentPaletteIndex = 1;
+  if (key === '3') currentPaletteIndex = 2;
+  if (key === '4') currentPaletteIndex = 3;
+  if (key === '5' && PALETTE_KEYS.length > 4) currentPaletteIndex = 4;
+  
+  // Space: animation
+  if (key === ' ') {
+    animating = !animating;
+    console.log(`Animation: ${animating ? 'ON' : 'OFF'}`);
+  }
+  
+  // W: wave
+  if (key === 'w' || key === 'W') {
+    waveEffect = !waveEffect;
+    waveTime = 0;
+    console.log(`Wave: ${waveEffect ? 'ON' : 'OFF'}`);
+  }
+  
+  // R: rotate
+  if (key === 'r' || key === 'R') {
+    rotating = !rotating;
+    if (!rotating) rotationAngle = 0;
+    console.log(`Rotation: ${rotating ? 'ON' : 'OFF'}`);
+  }
+  
+  // S: save
+  if (key === 's' || key === 'S') {
+    let filename = `mario_${PALETTE_KEYS[currentPaletteIndex]}_${Date.now()}.png`;
+    saveCanvas(filename);
+    console.log(`Saved: ${filename}`);
+  }
+  
+  // +/-: pixel size
+  if (key === '+' || key === '=') {
+    pixelSize = min(pixelSize + 2, 32);
+  }
+  if (key === '-' || key === '_') {
+    pixelSize = max(pixelSize - 2, 4);
+  }
+  
+  // Prevent default for space (page scroll)
+  if (key === ' ') return false;
+}
+
+// ============================================================================
+// UTILITY: Create sprite as image
+// ============================================================================
+
+function createSpriteImage(data, palette) {
+  let w = data[0].length;
+  let h = data.length;
+  
+  let img = createImage(w, h);
+  img.loadPixels();
+  
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let colorIndex = parseInt(data[y][x]);
+      let c = color(palette.colors[colorIndex]);
+      let idx = (y * w + x) * 4;
+      img.pixels[idx] = red(c);
+      img.pixels[idx + 1] = green(c);
+      img.pixels[idx + 2] = blue(c);
+      img.pixels[idx + 3] = 255;
+    }
+  }
+  
+  img.updatePixels();
+  return img;
+}
+</script>
+</body>
+</html>
