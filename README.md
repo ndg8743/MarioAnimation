@@ -40,6 +40,11 @@ python python/pixel_art_engine.py
 - Sprite sheet generation
 - PNG export functionality
 
+**Output:**
+![Mario Stand](assets/mario_stand.png)
+![Goomba](assets/goomba.png)
+![Mario Walk Spritesheet](assets/mario_walk_sheet.png)
+
 ---
 
 #### 3. `python/pixel_art_manim.py` - Manim Animation
@@ -93,11 +98,11 @@ go run headless.go
 ```
 
 **Output:**
-- `mario_nes.png`
-- `mario_gameboy.png`
-- `mario_grayscale.png`
-- `mario_synthwave.png`
-- `mario_walk.gif`
+![Mario NES](assets/mario_nes.png)
+![Mario Game Boy](assets/mario_gameboy.png)
+![Mario Grayscale](assets/mario_grayscale.png)
+![Mario Synthwave](assets/mario_synthwave.png)
+![Mario Walk Animation](assets/mario_walk.gif)
 
 ---
 
